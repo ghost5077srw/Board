@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Board</title>
+</head>
+<body>
+
+	<div class="app">
+  <div class="controls">
+    <div class="title">Sketch</div>
+    <div class="type">
+      <input type="radio" name="pen-type" id="pen-pencil" checked>
+      <label for="pen-pencil">
+        <i class="fa fa-pencil"></i>
+      </label>
+      <input type="radio" name="pen-type" id="pen-brush">
+      <label for="pen-brush">
+        <i class="fa fa-paint-brush"></i>
+      </label>
+    </div>
+    <div class="size">
+      <label for="pen-size">Size</label>
+      <input type="range" id="pen-size" min="1" max="50">
+    </div>
+    <div class="color">
+      <label for="pen-color">Color</label>
+      <input type="color" id="pen-color" value="#000">
+    </div>
+    <div class="actions">
+      <button id="reset-canvas">Reset</button>
+      <button id="save-canvas">Save</button>
+    </div>
+  </div>
+  <div id="canvas-wrapper"></div>
+</div>
+
+
+
+
+
+<div class="navigation">
+  <div class="ham-btn" onclick="showNav()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <div class="links">
+    <div class="link">
+      <a href="#">Home</a>
+    </div>
+    <div class="link">
+      <a href="#">Save Board</a>
+    </div>
+    <div class="link">
+      <a href="#">Reset Board</a>
+    </div>
+  </div>
+</div>
+<div class="content">
+  
+</div>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.6/p5.min.js"></script>
+
+<style type="text/css">
+* {
+  margin:0px;
+  padding:0px;
+  box-sizing:border-box;
+  transition: 0.7s ease-in;
+  user-select: none;
+}
+body {
+  background:#31755d;
+}
+.app {
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:650px;
+  height:650px;
+  font-family:"Raleway", sans-serif;
+}
+.app .controls {
+  height:50px;
+  display:flex;
+  align-items:center;
+  background:#ddd;
+  padding:0px 10px;
+}
+.app .controls .title {
+  font-weight:600;
+  color:#030303;
+  width:80px;
+}
+.app .controls .type,
+.app .controls .size,
+.app .controls .color {
+  margin: 0px 10px;
+}
+.app .controls .type input {
+  display:none;
+}
+.app .controls .type label {
+  width:30px;
+  height:30px;
+  display:inline-block;
+  text-align:center;
+  line-height:30px;
+  margin:0px 2px;
+  cursor:pointer;
+}
+.app .controls .type input:checked + label {
+  background:#111;
+  color:yellow;
+  border-radius:12%;
+}
+.app .controls .size input {
+  height:10px;
+}
+.app .controls .actions {
+  flex:1;
+  text-align:right;
+}
+.app .controls .actions button {
+  padding:5px 10px;
+  cursor:pointer;
+}
+
+
+
+
+.content {
+  padding:20px;
+  font-size:18px;
+}
+.navigation {
+  position:fixed;
+  top:0px;
+  left:0px;
+  width:100%;
+  height:100%;
+  background:#2e2d2d;
+  z-index:200;
+  clip-path:circle(25px at calc(100% - 45px) 45px);
+  transition:all 500ms ease-in-out;
+}
+.navigation.active {
+  clip-path:circle(75%);
+}
+.navigation .ham-btn {
+  position:absolute;
+  top:20px;
+  right:20px;
+  width:50px;
+  height:50px;
+  border-radius:10%;
+  cursor:pointer;
+}
+.navigation .ham-btn span {
+  position:absolute;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:50%;
+  height:2px;
+  background:#4a914d;
+  transition:all 200ms ease-in-out;
+}
+.navigation .ham-btn span:nth-child(1) {
+  top:30%;
+}
+.navigation .ham-btn span:nth-child(2) {
+  top:50%;
+}
+.navigation .ham-btn span:nth-child(3) {
+  top:70%;
+}
+ 
+.navigation.active .ham-btn span:nth-child(1) {
+  top:50%;
+  transform:translate(-50%,-50%) rotate(45deg);
+}
+.navigation.active .ham-btn span:nth-child(2) {
+  display:none;
+}
+.navigation.active .ham-btn span:nth-child(3) {
+  top:50%;
+  transform:translate(-50%,-50%) rotate(-45deg);
+}
+ 
+.navigation .links {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+.navigation .links a {
+  position:relative;
+  display:inline-block;
+  margin:20px 0px;
+  font-size:20px;
+  font-weight:600;
+  text-decoration:none;
+  color:#faf693;
+  text-transform:uppercase;
+  letter-spacing:5px;
+}
+.navigation .links a:after {
+  content:"";
+  position:absolute;
+  left:0px;
+  bottom:-5px;
+  height:2px;
+  width:0%;
+  background:#2e7d20;
+  transition:all 300ms ease-in-out;
+}
+.navigation .links a:hover:after {
+  width:100%;
+}
+
+
+
+
+
+</style>
+
+<script type="text/javascript">
+
+	function showNav(){
+  document.getElementsByClassName("navigation")[0].classList.toggle("active");
+}
+
+
+function _(selector){
+  return document.querySelector(selector);
+}
+function setup(){
+  let canvas = createCanvas(650, 600);
+  canvas.parent("canvas-wrapper");
+  background('white');
+}
+function mouseDragged(){
+  let type = _("#pen-pencil").checked?"pencil":"pencil";
+  let size = parseInt(_("#pen-size").value);
+  let color = _("#pen-color").value;
+  fill(color);
+  stroke(color);
+  if(type == "pencil"){
+    line(pmouseX, pmouseY, mouseX, mouseY);
+  } else {
+    ellipse(mouseX, mouseY, size, size);
+  }
+}
+_("#reset-canvas").addEventListener("click", function(){
+  background('white');
+});
+_("#save-canvas").addEventListener("click",function(){
+  saveCanvas(canvas, "Page", "png");
+});
+</script>
+
+</body>
+</html>
